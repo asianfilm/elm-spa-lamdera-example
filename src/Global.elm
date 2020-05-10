@@ -29,22 +29,20 @@ type alias Flags =
 
 
 type alias Model =
-    { flags : Flags
-    , url : Url
+    { url : Url
     , key : Nav.Key
     , user : Maybe User
     , modal : Maybe Modal
     }
 
 
-init : Flags -> Url -> Nav.Key -> ( Model, Cmd Msg )
-init flags url key =
-    ( Model
-        flags
-        url
-        key
-        Nothing
-        Nothing
+init : Url -> Nav.Key -> ( Model, Cmd Msg )
+init url key =
+    ( { url = url
+      , key = key
+      , user = Nothing
+      , modal = Nothing
+      }
     , Cmd.none
     )
 

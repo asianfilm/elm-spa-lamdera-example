@@ -1,52 +1,42 @@
-module Main exposing (main)
+module Frontend exposing (app)
 
 import Browser exposing (Document)
 import Browser.Navigation as Nav exposing (Key)
-import Global
-import Html
 import Generated.Pages as Pages
 import Generated.Route as Route exposing (Route)
+import Global
+import Html
+import Lamdera
+import Types exposing (..)
 import Url exposing (Url)
 
 
-main : Program Flags Model Msg
-main =
-    Browser.application
+app =
+    Lamdera.frontend
         { init = init
-        , view = view
         , update = update
+        , updateFromBackend = updateFromBackend
         , subscriptions = subscriptions
+        , view = view
         , onUrlRequest = LinkClicked
         , onUrlChange = UrlChanged
         }
 
 
-
--- INIT
-
-
-type alias Flags =
-    ()
-
-
-type alias Model =
-    { key : Key
-    , url : Url
-    , global : Global.Model
-    , page : Pages.Model
-    }
-
-
-init : Flags -> Url -> Key -> ( Model, Cmd Msg )
-init flags url key =
+init : Url -> Key -> ( FrontendModel, Cmd FrontendMsg )
+init url key =
     let
         ( global, globalCmd ) =
-            Global.init flags url key
+            Global.init url key
 
         ( page, pageCmd, pageGlobalCmd ) =
             Pages.init (fromUrl url) global
     in
-    ( Model key url global page
+    ( { url = url
+      , key = key
+      , global = global
+      , page = page
+      }
     , Cmd.batch
         [ Cmd.map Global globalCmd
         , Cmd.map Global pageGlobalCmd
@@ -55,18 +45,11 @@ init flags url key =
     )
 
 
-type Msg
-    = LinkClicked Browser.UrlRequest
-    | UrlChanged Url
-    | Global Global.Msg
-    | Page Pages.Msg
-
-
-update : Msg -> Model -> ( Model, Cmd Msg )
+update : FrontendMsg -> FrontendModel -> ( FrontendModel, Cmd FrontendMsg )
 update msg model =
     case msg of
         LinkClicked (Browser.Internal url) ->
-            ( model, Nav.pushUrl model.key (Url.toString url) )
+            ( model, Cmd.batch [ Nav.pushUrl model.key (Url.toString url) ] )
 
         LinkClicked (Browser.External href) ->
             ( model, Nav.load href )
@@ -94,18 +77,26 @@ update msg model =
 
         Page pageMsg ->
             let
-                ( page, pageCmd, globalCmd ) =
+                ( page, pageCmd, pageGlobalCmd ) =
                     Pages.update pageMsg model.page model.global
             in
             ( { model | page = page }
             , Cmd.batch
                 [ Cmd.map Page pageCmd
-                , Cmd.map Global globalCmd
+                , Cmd.map Global pageGlobalCmd
                 ]
             )
 
+        NoOpFrontendMsg ->
+            ( model, Cmd.none )
 
-subscriptions : Model -> Sub Msg
+
+updateFromBackend : ToFrontend -> FrontendModel -> ( FrontendModel, Cmd FrontendMsg )
+updateFromBackend msg model =
+    ( model, Cmd.none )
+
+
+subscriptions : FrontendModel -> Sub FrontendMsg
 subscriptions model =
     Sub.batch
         [ model.global
@@ -117,7 +108,7 @@ subscriptions model =
         ]
 
 
-view : Model -> Browser.Document Msg
+view : FrontendModel -> Browser.Document FrontendMsg
 view model =
     let
         documentMap :

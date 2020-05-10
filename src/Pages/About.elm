@@ -7,7 +7,7 @@ module Pages.About exposing
 
 import Data.Tab as Tab exposing (Tab)
 import Html exposing (..)
-import Html.Attributes as Attr exposing (class)
+import Html.Attributes as Attr exposing (class, href, rel)
 import Html.Events as Events
 import Page exposing (Document, Page)
 
@@ -69,7 +69,9 @@ view :
 view model =
     { title = "About"
     , body =
-        [ h1 [ class "font--h1" ] [ text "About" ]
+        [ Html.node "link" [ rel "stylesheet", href "https://not-much-css.netlify.com/not-much.css" ] []
+        , Html.node "link" [ rel "stylesheet", href "/main.css" ] []
+        , h1 [ class "font--h1" ] [ text "About" ]
         , tabs
             { selected = model.tab
             , choices =

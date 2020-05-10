@@ -6,7 +6,7 @@ module Pages.Authors.Dynamic.Posts.Dynamic exposing
     )
 
 import Html exposing (..)
-import Html.Attributes as Attr exposing (class)
+import Html.Attributes as Attr exposing (class, href, rel)
 import Page exposing (Document, Page)
 
 
@@ -22,8 +22,8 @@ type alias Model =
     }
 
 
-type alias Msg =
-    Never
+type Msg
+    = NoOp
 
 
 page : Page Flags Model Msg
@@ -44,7 +44,9 @@ view : Model -> Document msg
 view model =
     { title = String.concat [ "Post ", model.postId, " by Author ", model.authorId ]
     , body =
-        [ h1 [ class "font--h1" ] [ text ("Post " ++ model.postId) ]
+        [ Html.node "link" [ rel "stylesheet", href "https://not-much-css.netlify.com/not-much.css" ] []
+        , Html.node "link" [ rel "stylesheet", href "/main.css" ] []
+        , h1 [ class "font--h1" ] [ text ("Post " ++ model.postId) ]
         , h3 [ class "font--h5" ] [ text ("Author: " ++ model.authorId) ]
         , p [] [ text "(but imagine an actual blog post here)" ]
         ]

@@ -9,7 +9,7 @@ import Browser.Navigation as Nav
 import Data.User as User exposing (User)
 import Global
 import Html exposing (..)
-import Html.Attributes exposing (alt, class, src)
+import Html.Attributes exposing (alt, class, href, rel, src)
 import Html.Events as Events
 import Page exposing (Document, Page)
 
@@ -70,7 +70,7 @@ update msg model =
 
 
 subscriptions : Model -> Sub Msg
-subscriptions model =
+subscriptions _ =
     Sub.none
 
 
@@ -85,7 +85,9 @@ view :
 view global model =
     { title = "Profile"
     , body =
-        [ h1 [ class "font--h1" ] [ text "Profile" ]
+        [ Html.node "link" [ rel "stylesheet", href "https://not-much-css.netlify.com/not-much.css" ] []
+        , Html.node "link" [ rel "stylesheet", href "/main.css" ] []
+        , h1 [ class "font--h1" ] [ text "Profile" ]
         , case global.user of
             Just user ->
                 div [ class "row spacing--large" ]

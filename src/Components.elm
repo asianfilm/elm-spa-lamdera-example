@@ -8,10 +8,10 @@ import Browser exposing (Document)
 import Data.Modal as Modal exposing (Modal)
 import Data.SignInForm exposing (SignInForm)
 import Data.User as User exposing (User)
-import Html exposing (..)
-import Html.Attributes as Attr exposing (class, href)
-import Html.Events as Events
 import Generated.Route as Route
+import Html exposing (..)
+import Html.Attributes as Attr exposing (class, href, rel)
+import Html.Events as Events
 
 
 
@@ -38,7 +38,9 @@ layout :
 layout { page, actions, global } =
     { title = page.title
     , body =
-        [ div [ class "container pad--medium column spacing--large h--fill" ]
+        [ Html.node "link" [ rel "stylesheet", href "https://not-much-css.netlify.com/not-much.css" ] []
+        , Html.node "link" [ rel "stylesheet", href "/main.css" ] []
+        , div [ class "container pad--medium column spacing--large h--fill" ]
             [ navbar { user = global.user, actions = actions }
             , div [ class "column spacing--large", Attr.style "flex" "1 0 auto" ] page.body
             , footer
@@ -84,7 +86,7 @@ navbar ({ actions } as options) =
 footer : Html msg
 footer =
     Html.footer [ class "container py--medium" ]
-        [ text "built with elm, 2020"
+        [ text "built with lamdera, 2020"
         ]
 
 
